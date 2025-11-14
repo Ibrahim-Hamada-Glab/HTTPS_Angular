@@ -1,7 +1,16 @@
 <app-places-container title="Available Places">
-  @if (places()) {
-  <app-places [places]="places()!" />
-  } @else if (places()?.length === 0) {
+  @if (placesService.Error() && placesService.Error() != '') {
+  <p class="error-message">{{ placesService.Error() }}</p>
+  } @else if (placesService.IsLoading() && !placesService.Error()) {
+  <p>Loading....</p>
+  <mat-spinner mode="indeterminate"></mat-spinner>
+  } @else if (placesService.AvailablePlaces() &&
+  placesService.AvailablePlaces()!.length > 0) {
+  <app-places
+    [places]="placesService.AvailablePlaces()!"
+    (selectPlace)="onSelectPlace($event)"
+  />
+  } @else if (!placesService.IsLoading() && !placesService.Error()) {
   <p class="fallback-text">Unfortunately, no places could be found.</p>
   }
 </app-places-container>

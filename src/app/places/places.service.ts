@@ -16,5 +16,7 @@ export class PlacesService {
 
   addPlaceToUserPlaces(place: Place) {}
 
-  removeUserPlace(place: Place) {}
+  removeUserPlace(place: Place) {
+    this.userPlaces.update((places) => places.filter((p) => p.id !== place.id));
+  }
 }

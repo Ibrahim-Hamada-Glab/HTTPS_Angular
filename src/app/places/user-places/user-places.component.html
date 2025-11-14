@@ -1,3 +1,17 @@
 <app-places-container title="Your Favorite Places">
-  <p>Todo...</p>
+  @if (placesService.IsLoadingUserPlaces() && !placesService.ErrorUserPlaces()
+  && !placesService.UserPlaces()) {
+  <p>Loading....</p>
+  <mat-spinner mode="indeterminate"></mat-spinner>
+  } @else if (placesService.UserPlaces() && placesService.UserPlaces()!.length
+  != 0) {
+  <app-places
+    [places]="placesService.UserPlaces()!"
+    (selectPlace)="onSelectPlace($event)"
+  ></app-places>
+  } @else if ( !placesService.IsLoadingUserPlaces() &&
+  !placesService.ErrorUserPlaces() && (!placesService.UserPlaces() ||
+  placesService.UserPlaces()!.length === 0) ) {
+  <p class="fallback-text">There are no preferred places.</p>
+  }
 </app-places-container>

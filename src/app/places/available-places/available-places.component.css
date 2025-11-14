@@ -1,3 +1,12 @@
 .fallback-text {
   text-align: center;
 }
+
+p {
+  text-align: center;
+  font-size: x-large;
+}
+mat-spinner {
+  margin: 2rem auto;
+  display: block;
+}
