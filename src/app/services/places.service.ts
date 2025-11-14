@@ -7,12 +7,16 @@ import {
 } from '../places/place-api.model';
 import { map, Observable, tap } from 'rxjs';
 import { HttpServiceService } from '../core/http-service.service';
+import { NgToastService } from 'ng-angular-popup';
 
 @Injectable({
   providedIn: 'root',
 })
 export class PlacesService {
-  constructor(private httpService: HttpServiceService) {}
+  constructor(
+    private httpService: HttpServiceService,
+    private toast: NgToastService
+  ) {}
 
   // ==================== Signals ====================
   // Available Places State
@@ -75,7 +79,8 @@ export class PlacesService {
           { placeId },
           {}
         ),
-      'Something went wrong while adding place to your favorites! Please try again later.'
+      'Something went wrong while adding place to your favorites! Please try again later.',
+      'Place added to your favorites successfully!'
     );
   }
 
@@ -89,14 +94,16 @@ export class PlacesService {
         this.httpService.delete<UserPlacesUpdateResponse>(
           `user-places/${place.id}`
         ),
-      'Something went wrong while removing place from your favorites! Please try again later.'
+      'Something went wrong while removing place from your favorites! Please try again later.',
+      'Place removed from your favorites successfully!'
     );
   }
 
   // ==================== Private Helper Methods ====================
   /**
    * Generic method to fetch places from the API.
-   * Handles loading state, error state, and updates the places signal.
+   * Handles loading state, error state, updates the places signal, and shows toast notifications on error.
+   * Note: Success toasts are not shown for fetch operations to avoid notification spam.
    */
   private fetchPlaces(
     path: string,
@@ -121,6 +128,7 @@ export class PlacesService {
           error: () => {
             isLoading.set(false);
             errorSignal.set(errorMessage);
+            this.toast.danger(errorMessage);
           },
         })
       );
@@ -128,11 +136,12 @@ export class PlacesService {
 
   /**
    * Generic method to update user places state (add/remove).
-   * Handles loading state, error state, and updates the user places signal.
+   * Handles loading state, error state, updates the user places signal, and shows toast notifications.
    */
   private updateUserPlacesState(
     httpCall: () => Observable<UserPlacesUpdateResponse>,
-    errorMessage: string
+    errorMessage: string,
+    successMessage: string
   ): Observable<Place[]> {
     this.isLoadingUserPlaces.set(true);
     this.errorUserPlaces.set('');
@@ -144,10 +153,12 @@ export class PlacesService {
           this.userPlaces.set(places);
           this.isLoadingUserPlaces.set(false);
           this.errorUserPlaces.set('');
+          this.toast.success(successMessage);
         },
         error: () => {
           this.isLoadingUserPlaces.set(false);
           this.errorUserPlaces.set(errorMessage);
+          this.toast.danger(errorMessage);
         },
       })
     );

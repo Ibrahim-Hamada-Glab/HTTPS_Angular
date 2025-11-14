@@ -63,6 +63,9 @@ app.put("/user-places", async (req, res) => {
 });
 
 app.delete("/user-places/:id", async (req, res) => {
+
+
+  return res.status(500).json({ message: "Something went wrong" });
   const placeId = req.params.id;
   console.log(placeId , "sa");
 
